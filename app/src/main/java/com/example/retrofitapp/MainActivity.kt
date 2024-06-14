@@ -20,10 +20,46 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+
+//        showPost()
+
+
+        createPost()
+
+    }
+
+    private fun createPost() {
         val rvPost = findViewById<RecyclerView>(R.id.rvPost)
         val tvResponseCode = findViewById<TextView>(R.id.tvResponseCode)
+        RetrofitClient.instance.createPost(
+            17,
+            "retrofitTitle",
+            "retrofitBody"
+        ).enqueue(object : Callback<CreatePostResponse>{
+            override fun onResponse(
+                call: Call<CreatePostResponse>,
+                response: Response<CreatePostResponse>
+            ) {
+                val responseText = "Response code: ${response.code()}\n" +
+                        "Title: ${response.body()?.title}\n" +
+                        "Body: ${response.body()?.body}\n" +
+                        "UserId: ${response.body()?.userId}\n" +
+                        "id: ${response.body()?.id}\n"
 
+                tvResponseCode.text = responseText
+            }
 
+            override fun onFailure(call: Call<CreatePostResponse>, t: Throwable) {
+                tvResponseCode.text = t.message
+            }
+
+        })
+    }
+
+    private fun showPost() {
+        val rvPost = findViewById<RecyclerView>(R.id.rvPost)
+        val tvResponseCode = findViewById<TextView>(R.id.tvResponseCode)
         rvPost.setHasFixedSize(true)
         rvPost.layoutManager = LinearLayoutManager(this)
 
